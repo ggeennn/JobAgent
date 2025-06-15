@@ -6,7 +6,77 @@ from fastmcp import FastMCP # 假设使用的是FastMCP 2.0+
 # 这个名称会在客户端配置中用到，用于识别此服务器
 mcp_server = FastMCP(name="WILJobAgent") 
 
-#... 此处将定义MCP工具和资源...
+# 在 mcp_server = FastMCP(name="WILJobAgent") 之后，运行服务器之前
+
+# 模拟的职位数据库 (初期硬编码)
+mock_jobs_database = [
+    {
+        "id": "job2",
+        "title": "QA Analyst Co-op",
+        "company": "Finance Corp",
+        "location": "Remote",
+        "description": "Seeking a QA co-op student for testing financial software. Experience with Selenium is a plus.",
+        "program_area": "Computer Programming and Analysis",
+        "keywords": ["qa", "testing", "selenium", "finance", "co-op"]
+    },
+    {
+        "id": "job3",
+        "title": "Application Developer WIL",
+        "company": "Healthcare Innovations",
+        "location": "Toronto, ON",
+        "description": "Develop and maintain healthcare applications using C# and.NET.",
+        "program_area": "Computer Programming and Analysis",
+        "keywords": ["c#", ".net", "application developer", "wil"]
+    }
+]
+
+@mcp_server.tool() # 使用 @mcp.tool() 或 @mcp_server.tool() 取决于FastMCP版本和初始化方式
+async def search_wil_jobs(keywords: list[str] = None, location: str = None, program: str = None) -> list[dict]:
+    """
+    Searches for WIL job postings based on keywords, location, and program area.
+    
+    :param keywords: A list of keywords to search for in job titles and descriptions.
+    :param location: The desired job location (e.g., "Toronto, ON", "Remote").
+    :param program: The student's program area (e.g., "Computer Programming").
+    :return: A list of job dictionaries matching the criteria.
+    """
+    results = []
+    # 如果没有提供任何搜索条件，则返回所有职位
+    if not keywords and not location and not program:
+        return mock_jobs_database # Return all if no criteria
+
+    for job in mock_jobs_database:
+        match = True
+        if keywords:
+            # 简单关键词匹配逻辑 (可以改进为更复杂的匹配)
+            if not any(k.lower() in job["title"].lower() or k.lower() in job["description"].lower() or k.lower() in " ".join(job["keywords"]).lower() for k in keywords):
+                match = False
+        
+        if location and match:
+            if location.lower() not in job["location"].lower():
+                match = False
+        
+        if program and match:
+            if program.lower() not in job["program_area"].lower():
+                match = False
+        
+        if match:
+            results.append(job)
+            
+    return results
+
+@mcp_server.tool()
+async def get_job_details(job_id: str) -> dict | None:
+    """
+    Retrieves the details for a specific job ID.
+
+    :param job_id: The ID of the job to retrieve.
+    :return: A dictionary containing job details, or None if not found.
+    """
+    for job in mock_jobs_database:
+        if job["id"] == job_id:
+            return job
+    return None
 
 # 4. 运行MCP服务器 (通常在脚本末尾)
 if __name__ == '__main__':
