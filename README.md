@@ -1,23 +1,23 @@
 
 
-# **利用AI（特别是GitHub Copilot）从零开始低成本搭建“MCP驱动的WIL求职智能代理”原型指南**
+# 利用AI（特别是GitHub Copilot）从零开始低成本搭建“MCP驱动的WIL求职智能代理”原型指南
 
-## **引言**
+## 引言
 
 本指南旨在协助用户利用人工智能（AI），特别是GitHub Copilot，以低成本甚至零成本的方式，从零开始搭建一个“模型上下文协议（MCP）驱动的工作整合学习（WIL）求职智能代理”的初步原型。我们将以Visual Studio Code (VS Code) 作为集成开发环境（IDE），详细阐述软硬件准备工作、架构设计、关键模块实现、AI辅助开发方法，并澄清诸如n8n等工具在原型开发阶段的必要性。本指南的目标是提供一个清晰、可操作的路线图，帮助用户不仅构建一个功能原型，还能在此过程中学习和掌握相关AI和软件开发技术。
 
-## **第一部分：项目背景与核心概念解析**
+## 第一部分：项目背景与核心概念解析
 
 在深入技术细节之前，理解项目的核心背景和关键概念至关重要。这包括对工作整合学习（WIL）项目、模型上下文协议（MCP）、求职智能代理以及元认知提示（Metacognitive Prompting, MP）的理解。
 
-### **什么是WIL（工学结合）项目?**
+### 什么是WIL（工学结合）项目?
 
 工作整合学习（Work-Integrated Learning, WIL）为学生提供了一个宝贵的机会，让他们能够在实际工作环境中运用在校所学的知识和技能，并持续学习新的技能和理论 1。这类项目通常是学生、雇主和教育机构之间的合作。
 
 **WIL项目的益处** 1：
 
-* **对于学生：** 获得带薪工作经验、学习新技能、拓展职业网络、积累与专业相关的实践经验。  
-* **对于雇主：** 无需招聘成本即可获得短期员工、满足短期人力需求、获得积极肯干的员工，并有机会发掘未来的正式员工。
+**对于学生：** 获得带薪工作经验、学习新技能、拓展职业网络、积累与专业相关的实践经验。  
+**对于雇主：** 无需招聘成本即可获得短期员工、满足短期人力需求、获得积极肯干的员工，并有机会发掘未来的正式员工。
 
 以加拿大塞内卡理工学院（Seneca Polytechnic）的WIL项目为例，参与的学生通常会担任以下职位 1：
 
@@ -32,10 +32,10 @@
 
 雇主对WIL学生通常有以下期望 2：
 
-* **技术/专业相关技能：** 掌握与所学专业相关的技术能力。  
-* **沟通与人际交往能力：** 具备良好的口头和书面沟通能力。  
-* **积极的工作态度：** 热情、灵活、积极向上。  
-* **职业素养：** 专业、有团队合作精神、乐于学习。
+**技术/专业相关技能：** 掌握与所学专业相关的技术能力。  
+**沟通与人际交往能力：** 具备良好的口头和书面沟通能力。  
+**积极的工作态度：** 热情、灵活、积极向上。  
+**职业素养：** 专业、有团队合作精神、乐于学习。
 
 理解WIL项目的这些具体细节，例如常见的职位名称、目标雇主类型以及雇主期望，对于构建一个有效的求职智能代理至关重要。代理需要能够处理和匹配这些信息，从而为WIL学生提供精准的求职辅助。
 
@@ -841,5 +841,6 @@ if \_\_name\_\_ \== '\_\_main\_\_':
 28. Anthropic Mcp \- Chroma Docs, 访问时间为 六月 12, 2025， [https://docs.trychroma.com/integrations/frameworks/anthropic-mcp](https://docs.trychroma.com/integrations/frameworks/anthropic-mcp)  
 29. Building Custom Integrations via Remote MCP Servers | Anthropic Help Center, 访问时间为 六月 12, 2025， [https://support.anthropic.com/en/articles/11503834-building-custom-integrations-via-remote-mcp-servers](https://support.anthropic.com/en/articles/11503834-building-custom-integrations-via-remote-mcp-servers)  
 30. punkpeye/fastmcp: A TypeScript framework for building MCP servers. \- GitHub, 访问时间为 六月 12, 2025， [https://github.com/punkpeye/fastmcp](https://github.com/punkpeye/fastmcp)  
-31. Example Servers \- Model Context Protocol, 访问时间为 六月 12, 2025， [https://modelcontextprotocol.io/examples](https://modelcontextprotocol.io/examples)#   j o n A g e n t  
+31. Example Servers \- Model Context Protocol, 访问时间为 六月 12, 2025， [https://modelcontextprotocol.io/examples](https://modelcontextprotocol.io/examples)#   j o n A g e n t 
+ 
  
