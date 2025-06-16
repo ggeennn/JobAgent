@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "servers": { 
+    "WILJobAgent": {
+      "command": "P:\\jobAgent\\.venv\\Scripts\\python.exe",
+      "args": [
+        "-u",
+        "server_script.py"
+      ],
+      "env": {},
+      "transport": "stdio"
+    }
+  }
+}

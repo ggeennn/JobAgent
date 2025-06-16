@@ -98,14 +98,14 @@ wil_job_titles = [
     "Quality Assurance Analyst"
 ]
 
-@mcp_server.resource("wil/employers")
+@mcp_server.resource("mcp://jobAgent/wil/employers")
 async def get_wil_employers_resource() -> list[str]:
     """
     Provides a list of common WIL program employers.
     """
     return wil_employers_list
 
-@mcp_server.resource("wil/job_titles")
+@mcp_server.resource("mcp://jobAgent/wil/job_titles")
 async def get_wil_job_titles_resource() -> list[str]:
     """
     Provides a list of common WIL program job titles.
@@ -119,5 +119,7 @@ if __name__ == '__main__':
     # mcp_server.serve_stdio() # 通过标准输入输出运行，适合本地CLI或VS Code集成
     # 或者 mcp_server.serve_http(host="localhost", port=8000) # 通过HTTP运行
     # 请参考FastMCP最新文档确定启动方式
-    # 为了与VS Code集成，stdio通常是首选
-    mcp_server.serve_stdio()
+    
+    # Using the run() method which is a common alternative.
+    # 使用 run() 方法，这是一个常见的备选方案。
+    mcp_server.run()
