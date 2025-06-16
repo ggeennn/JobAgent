@@ -78,6 +78,40 @@ async def get_job_details(job_id: str) -> dict | None:
             return job
     return None
 
+# 定义雇主列表（从文档 [1] 提取的数据）
+wil_employers_list = [
+    "CIBC",
+    "RBC",
+    "TD",
+    "Manulife Financial",
+    "Canadian Tire Corporation",
+    "NexJ Systems Inc."
+]
+
+# 定义常见 WIL 职位头衔列表
+wil_job_titles = [
+    "Junior Systems Developer",
+    "Software Engineer",
+    "Programmer/Analyst",
+    "Testing Specialist",
+    "Application Developer",
+    "Quality Assurance Analyst"
+]
+
+@mcp_server.resource("wil/employers")
+async def get_wil_employers_resource() -> list[str]:
+    """
+    Provides a list of common WIL program employers.
+    """
+    return wil_employers_list
+
+@mcp_server.resource("wil/job_titles")
+async def get_wil_job_titles_resource() -> list[str]:
+    """
+    Provides a list of common WIL program job titles.
+    """
+    return wil_job_titles
+
 # 4. 运行MCP服务器 (通常在脚本末尾)
 if __name__ == '__main__':
     # mcp_server.run() # 早期FastMCP或官方SDK的运行方式 [18]
