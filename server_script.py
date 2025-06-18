@@ -4,9 +4,9 @@ from fastmcp import FastMCP # 假设使用的是FastMCP 2.0+
 
 # 1. 初始化MCP服务器，并指定一个名称
 # 这个名称会在客户端配置中用到，用于识别此服务器
-mcp_server = FastMCP(name="WILJobAgent") 
+mcp_server = FastMCP(name="wiljobagent") 
 
-# 在 mcp_server = FastMCP(name="WILJobAgent") 之后，运行服务器之前
+# 在 mcp_server = FastMCP(name="wiljobagent") 之后，运行服务器之前
 
 # 模拟的职位数据库 (初期硬编码)
 mock_jobs_database = [
@@ -120,6 +120,11 @@ if __name__ == '__main__':
     # 或者 mcp_server.serve_http(host="localhost", port=8000) # 通过HTTP运行
     # 请参考FastMCP最新文档确定启动方式
     
-    # Using the run() method which is a common alternative.
-    # 使用 run() 方法，这是一个常见的备选方案。
-    mcp_server.run()
+    # Reverting to run() method as it may not require async environment.
+    # 恢复到 run() 方法，因为它可能不需要异步环境。
+    # mcp_server.run()
+        print("Starting MCP Server in HTTP mode on http://127.0.0.1:8000 ...")
+    # 使用我们之前发现的 run_http_async 方法
+    # 它需要在一个asyncio事件循环中运行
+        import asyncio
+        asyncio.run(mcp_server.run_http_async(host="127.0.0.1", port=8000))

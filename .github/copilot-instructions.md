@@ -112,3 +112,35 @@
 1. Target co-op roles that align with backend development and automation.
 2. Focus on AI-assisted projects in portfolio and resume.
 3. Practice interview stories showcasing learning under pressure and problem-solving.
+
+# 🤖 WIL Job-Fit Analysis Agent
+
+## Motivation
+- 需要智能分析WIL工作机会与学生profile的匹配度
+- 提供数据驱动的求职决策支持
+
+## Goal
+- 构建结构化的job description分析框架
+- 生成actionable的求职建议
+
+## Steps
+
+1. Technical Fit Analysis
+    - Parse job description's technical requirements
+    - Compare with student's Python/SQL strengths
+    - Identify gaps in front-end skills
+
+2. Soft Skills Evaluation
+    - Extract key soft skills requirements
+    - Map to student's project experiences
+    - Highlight relevant team collaboration examples
+
+3. Gap Mitigation Strategy
+    - Identify quick-win learning opportunities
+    - Suggest portfolio project adjustments
+    - Draft learning commitment statements
+
+4. Fit Summary Generation
+    - Calculate overall match percentage
+    - List top 3 matching points
+    - Provide 2-3 actionable next steps

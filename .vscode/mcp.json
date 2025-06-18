@@ -1,14 +1,9 @@
 {
   "version": "1.0",
-  "servers": { 
-    "WILJobAgent": {
-      "command": "P:\\jobAgent\\.venv\\Scripts\\python.exe",
-      "args": [
-        "-u",
-        "server_script.py"
-      ],
-      "env": {},
-      "transport": "stdio"
+  "servers": {
+    "wiljobagent": {
+      "transport": "http",
+      "url": "http://127.0.0.1:8000/mcp/"
     }
   }
 }
