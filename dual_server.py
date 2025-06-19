@@ -1,14 +1,16 @@
-# server_script.py
-from fastmcp import FastMCP # 假设使用的是FastMCP 2.0+
-# 或者 from mcp.server.fastmcp import FastMCP 如果是早期版本或官方SDK的mcp包 [7, 18]
+from fastmcp import FastMCP
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+import logging
 
-# 1. 初始化MCP服务器，并指定一个名称
-# 这个名称会在客户端配置中用到，用于识别此服务器
-mcp_server = FastMCP(name="wiljobagent") 
+# 1. Initialize MCP server
+mcp_server = FastMCP(
+    name="wiljobagent",
+    #stateless_http=True  # enable stateless HTTP (no sessions), compatible with cline
+    # json_response can be default True for HTTP; SSE uses streaming
+)
 
-# 在 mcp_server = FastMCP(name="wiljobagent") 之后，运行服务器之前
-
-# 模拟的职位数据库 (初期硬编码)
+# 2. Mock data setup
 mock_jobs_database = [
     {
         "id": "job2",
@@ -24,12 +26,13 @@ mock_jobs_database = [
         "title": "Application Developer WIL",
         "company": "Healthcare Innovations",
         "location": "Toronto, ON",
-        "description": "Develop and maintain healthcare applications using C# and.NET.",
+        "description": "Develop and maintain healthcare applications using C# and .NET.",
         "program_area": "Computer Programming and Analysis",
         "keywords": ["c#", ".net", "application developer", "wil"]
     }
 ]
 
+#define tools
 @mcp_server.tool() # 使用 @mcp.tool() 或 @mcp_server.tool() 取决于FastMCP版本和初始化方式
 async def search_wil_jobs(keywords: list[str] = None, location: str = None, program: str = None) -> list[dict]:
     """
@@ -78,7 +81,7 @@ async def get_job_details(job_id: str) -> dict | None:
             return job
     return None
 
-# 定义雇主列表（从文档 [1] 提取的数据）
+# 4. Define resources
 wil_employers_list = [
     "CIBC",
     "RBC",
@@ -88,7 +91,6 @@ wil_employers_list = [
     "NexJ Systems Inc."
 ]
 
-# 定义常见 WIL 职位头衔列表
 wil_job_titles = [
     "Junior Systems Developer",
     "Software Engineer",
@@ -100,31 +102,69 @@ wil_job_titles = [
 
 @mcp_server.resource("mcp://jobAgent/wil/employers")
 async def get_wil_employers_resource() -> list[str]:
-    """
-    Provides a list of common WIL program employers.
-    """
     return wil_employers_list
 
 @mcp_server.resource("mcp://jobAgent/wil/job_titles")
 async def get_wil_job_titles_resource() -> list[str]:
-    """
-    Provides a list of common WIL program job titles.
-    """
     return wil_job_titles
 
-# 4. 运行MCP服务器 (通常在脚本末尾)
-if __name__ == '__main__':
-    # mcp_server.run() # 早期FastMCP或官方SDK的运行方式 [18]
-    # FastMCP 2.0+ 可能有更灵活的启动方式，例如:
-    # mcp_server.serve_stdio() # 通过标准输入输出运行，适合本地CLI或VS Code集成
-    # 或者 mcp_server.serve_http(host="localhost", port=8000) # 通过HTTP运行
-    # 请参考FastMCP最新文档确定启动方式
-    
-    # Reverting to run() method as it may not require async environment.
-    # 恢复到 run() 方法，因为它可能不需要异步环境。
-    # mcp_server.run()
-        print("Starting MCP Server in HTTP mode on http://127.0.0.1:8000 ...")
-    # 使用我们之前发现的 run_http_async 方法
-    # 它需要在一个asyncio事件循环中运行
-        import asyncio
-        asyncio.run(mcp_server.run_http_async(host="127.0.0.1", port=8000))
+# 5. Logging setup
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s - %(levelname)s - %(message)s",
+                    filename="mcp_server.log")
+logger = logging.getLogger(__name__)
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    """Middleware to log each request and response."""
+    async def dispatch(self, request, call_next):
+        logger.debug(f"Incoming request: {request.method} {request.url}")
+        logger.debug(f"Headers: {dict(request.headers)}")
+        logger.debug(f"Query params: {dict(request.query_params)}")
+        response = await call_next(request)
+        logger.debug(f"Response status: {response.status_code}")
+        return response
+
+# Prepare Starlette middleware
+middleware = [
+    Middleware(LoggingMiddleware)
+]
+
+if __name__ == "__main__":
+    import uvicorn
+    from starlette.applications import Starlette
+    from starlette.routing import Mount
+    from contextlib import asynccontextmanager
+
+    # 1. 像之前一样，创建两个 transport-specific 的 app
+    http_app = mcp_server.http_app(path="/jobagent", transport="streamable-http", middleware=middleware)
+    sse_app = mcp_server.http_app(path="/jobagent", transport="sse")
+
+    # 2. 定义一个统一的 lifespan 管理器
+    #    这个管理器会确保两个子应用的 lifespan 都被正确执行
+    @asynccontextmanager
+    async def unified_lifespan(app):
+        # 服务器启动时...
+        async with http_app.lifespan(app):
+            async with sse_app.lifespan(app):
+                print("Lifespan started: Both HTTP and SSE transports are ready.")
+                yield
+        # 服务器关闭时...
+        print("Lifespan shutdown: Cleaning up resources.")
+
+
+    # 3. 创建根应用，并把统一的 lifespan 管理器传给它
+    root_app = Starlette(
+        routes=[
+            Mount("/http", app=http_app),
+            Mount("/sse", app=sse_app),
+        ],
+        lifespan=unified_lifespan  # <--- 这是解决问题的关键
+    )
+
+    # 4. 打印访问地址 (与之前相同)
+    print("Starting unified MCP Server on http://127.0.0.1:8000")
+    print("  - HTTP endpoint for Copilot: http://127.0.0.1:8000/http/jobagent")
+    print("  - SSE endpoint for cline:    http://127.0.0.1:8000/sse/jobagent")
+
+    # 5. 运行这一个根应用
+    uvicorn.run(root_app, host="127.0.0.1", port=8000)
