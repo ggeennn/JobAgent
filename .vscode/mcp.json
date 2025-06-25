@@ -1,9 +1,0 @@
-{
-  "version": "1.0",
-  "servers": {
-    "wiljobagent": {
-      "transport": "http",
-      "url": "http://127.0.0.1:8000/http/jobagent/"
-    }
-  }
-}

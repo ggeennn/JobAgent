@@ -1,0 +1,4 @@
+crewai
+crewai-tools
+python-dotenv
+# 未来我们可能会添加 open-extract, firecrawl-py 等

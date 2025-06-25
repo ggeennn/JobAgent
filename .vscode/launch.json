@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // 为我们的配置起一个清晰的名字
+            "name": "求职特工队: 启动 (Job Agent: Run)",
+            "type": "debugpy",
+            "request": "launch",
+            // 核心：明确指定程序的入口是 main.py
+            "program": "${workspaceFolder}/main.py",
+            // 使用VS Code的集成终端，这样我们能看到所有print输出并可以进行input输入
+            "console": "integratedTerminal",
+            // 一个好习惯：调试时优先关注我们自己的代码，而不是第三方库的内部
+            "justMyCode": true
+        }
+    ]
+}
