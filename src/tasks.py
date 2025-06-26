@@ -2,33 +2,39 @@ from textwrap import dedent
 from crewai import Task
 
 class JobAgentTasks:
-    def brand_discovery_task(self, agent, user_input):
+    def conversational_task(self, agent, context):
+        """一个在循环中不断进行的对话任务"""
         return Task(
             description=dedent(f"""
-                你正在与一位求职者进行对话。这是他们刚刚分享的一段关于他们有成就感的技术经历：
+                你正在与一位求职者进行深度对话，以挖掘他们的个人亮点。
+                这是到目前为止的对话记录：
                 ---
-                {user_input}
+                {context}
                 ---
-
-                你的任务是：
-                1.  用一句话总结这段经历的核心亮点。
-                2.  基于这个亮点，提出一个有深度的、开放式的追问，以挖掘更多关于求职者解决问题能力的细节。
+                你的任务是分析整个对话的上下文，然后提出一个最能引导对话走向深入的、开放式的追问。
+                你的回答必须只能是问题本身，不要包含任何客套话或前缀。
             """),
-            expected_output=dedent("""
-                一个包含两部分的文本：
-                1.  对用户经历的简短总结。
-                2.  一个能引导用户进行更深层次思考的追问。
-            """),
+            expected_output="一个精准的、能引导对话向更深层次发展的追问。",
             agent=agent
         )
 
-    def meta_resource_creation_task(self, agent):
-        # 注意：这个任务没有直接的description，因为它依赖于上一个任务的输出作为上下文。
+    def summary_and_save_task(self, agent, conversation_history, existing_summary):
+        """一个专门用于总结和保存的任务"""
         return Task(
-            description="将前面对话中总结出的用户经历亮点和追问，结构化地写入到个人元资源库文件中。确保格式清晰，便于未来查阅。",
-            expected_output="调用FileWriterTool成功后的确认信息。",
-            agent=agent,
-            # context 允许我们将上一个任务的输出传递给这个任务
-            # 我们将在crews.py中指定它的具体内容
-            context=[] 
+            description=dedent(f"""
+                分析下方提供的“现有总结”和“最新对话记录”。
+                你的任务是，将“最新对话记录”中的新信息，以智能的方式整合进“现有总结”中，形成一份更全面、更丰富的最终版本。
+                最终版本必须严格基于所提供的所有信息，不允许添加任何外部信息。
+                最后，调用文件写入工具，将这份最终的、完整的总结写入到 'personal_brand_assets.md' 文件中。
+
+                ---
+                现有总结:
+                {existing_summary}
+                ---
+                最新对话记录:
+                {conversation_history}
+                ---
+            """),
+            expected_output="调用文件写入工具成功后的确认信息。",
+            agent=agent
         )
